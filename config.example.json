@@ -1,0 +1,59 @@
+{
+  "settings": {
+
+  },
+  "messages": {
+    "start": {},
+    "with-arguments": {
+      "arguments": [
+        {
+          "name": "argument1",
+          "type": "string"
+        },
+        {
+          "name": "argument2",
+          "type": "number"
+        },
+        {
+          "name": "argument3",
+          "type": "range",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        }
+      ]
+    },
+    "with-handled-arguments": {
+      "arguments": [
+        {
+          "name": "argument1",
+          "type": "string"
+        },
+        {
+          "name": "argument2",
+          "type": "number"
+        },
+        {
+          "name": "argument3",
+          "type": "range",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "default": 50
+        },
+        {
+          "name": "argument4",
+          "type": "select",
+          "options": ["one", "two", "three"],
+          "default": "two"
+        },
+        {
+          "name": "argument5",
+          "type": "json"
+        }
+      ],
+      "handleArguments": "(function handle () { return Array.prototype.join.apply( arguments || [], [':'] ); })"
+    }
+  }
+}
