@@ -10,6 +10,6 @@ router.use( '/party/:party', function ( req, res, next ) {
     next();
 } );
 
-router.use( '/party/:party', express.static( __dirname +'/../party' ) );
+router.use( '/party/:party', express.static( __dirname +'/../static/party' ) );
 
 module.exports = router;

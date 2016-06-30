@@ -1,0 +1,30 @@
+html {
+    font-size: 100%;
+}
+
+body {
+    font-family: "Times New Roman", serif;
+    background-color: #dadada;
+}
+
+h1,h2,h3,h4,h5,h6 {
+    font-style: italic;
+}
+
+a, a:hover, a:active, a:visited {
+    color: #f71098;
+}
+
+
+
+/* Bootstrap overrides */
+
+.btn.btn-primary {
+    background-color: #404040;
+    background-image: none;
+    border-color: #333;
+}
+
+.btn.btn-primary:hover {
+    background-color: #000;
+}

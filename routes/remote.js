@@ -10,6 +10,6 @@ router.use( '/party/:party/remote', function ( req, res, next ) {
     next();
 } );
 
-router.use( '/party/:party/remote', express.static( __dirname +'/../remote' ) );
+router.use( '/party/:party/remote', express.static( __dirname +'/../static/remote' ) );
 
 module.exports = router;

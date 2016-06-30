@@ -19,6 +19,7 @@ class Service {
     createPartyPlace ( name ) {
 
         if ( ! this.hasPartyPlace( name ) ) {
+            debug('creating party place', name );
             this.parties[ name ] = new PartyController( this.socket.of( '/'+ name ), name );
         }
 

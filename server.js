@@ -26,6 +26,7 @@ fs.stat('./config.json', function ( err, stats ) {
             var Service = require('./service/Service').setSocket( io );
 
             app.use( require('./routes/vendor') );
+            app.use( require('./routes/shared') );
             app.use( require('./routes/config') );
             app.use( require('./routes/remote') );
             app.use( require('./routes/party') );
