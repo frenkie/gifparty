@@ -1,7 +1,12 @@
-var debug = require('debug')('message-engine');
+/**
+ * A simple pass through socket io message handler.
+ * Adapted from @see https://github.com/frenkie/sockit
+ */
+
+var debug = require('debug')('gifparty:message-engine');
 
 /**
- * @param {Socket.io} socket
+ * @param {Socket.io} socket - Namespaced socket for the gifparty
  * @param {Object} messages Hash of message name/object pairs to handle
  */
 var MessageEngine = function ( socket, messages ) {
