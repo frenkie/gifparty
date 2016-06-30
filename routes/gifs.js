@@ -8,7 +8,8 @@ router.get('/gifs/:query', function (req, res) {
     if ( req.params.query ) {
 
         request.get({
-            url: 'http://api.giphy.com/v1/gifs/search?api_key='+ config.settings.giphyApiKey +'&q='+
+            url: 'http://api.giphy.com/v1/gifs/search?api_key='+ config.settings.giphyApiKey
+                +'&limit='+ ( req.params.limit || 100 ) +'&offset='+ ( req.params.offset || 0 ) +'&q='+
                     req.params.query.replace( /[-]+/ig, '+'),
             json: true
         }, function ( error, response, body ) {

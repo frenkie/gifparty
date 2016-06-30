@@ -17,9 +17,13 @@
                         <select class="audio-input">
                             <option value="">choose your audio source</option>
                             {{#audioOptions}}
-                                <option value="{{value}}">{{label}}</option>
+                                <option value="{{value}}" {{#selected}} selected="selected" {{/selected}}>{{label}}</option>
                             {{/audioOptions}}
                         </select>
+
+                        <div class="tags">
+                            {{#tags}}<button class="tag btn btn-primary">{{.}}</button>{{/tags}}
+                        </div>
                     </script>
                 </div>
             </div>

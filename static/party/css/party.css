@@ -25,6 +25,19 @@
 
     padding: 10px;
 
-    background-color: #404040;
-    color: #dadada;
+    background-color: #dadada;
+    color: #404040;
+}
+
+.audio-input {
+    display: inline-block;
+    width: 150px;
+}
+
+.tags {
+    display: inline-block;
+}
+
+.tag {
+    margin-right: 5px;
 }
