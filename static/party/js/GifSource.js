@@ -1,5 +1,6 @@
 var GifSource = function ( tag ) {
 
+    this.active = true;
     this.tag = tag;
     this.data = null;
     this.ready = false;
@@ -12,6 +13,11 @@ var GifSource = function ( tag ) {
    	this.MAX_GIF_COUNT = 100;
 
     this.fetch().then( this.preloadGifs.bind( this ) );
+
+    this.FETCH_REFRESH_TIMEOUT = 30000;
+    this.lastFetch = Date.now();
+
+    //this.update();
 };
 
 GifSource.prototype = {
@@ -34,6 +40,8 @@ GifSource.prototype = {
     fetch: function () {
 
         var deferred = new $.Deferred();
+
+        console.log( '(re)fetching GIFs for '+ this.tag );
 
         $.ajax({
             url: '/gifs/'+ this.tag +'?limit='+ this.MAX_GIF_COUNT +'&offset='+ this.searchOffset
@@ -87,5 +95,21 @@ GifSource.prototype = {
        	});
 
        	img.src = url;
+    },
+
+    setActive: function ( to ) {
+        this.active = to;
+    },
+
+    update: function () {
+        requestAnimationFrame( this.update.bind( this ) );
+
+        if ( Date.now() - this.lastFetch >= this.FETCH_REFRESH_TIMEOUT  ) {
+            this.lastFetch = Date.now();
+
+            if ( this.active ) {
+                this.fetch().then( this.preloadGifs.bind( this ) );
+            }
+        }
     }
 };

@@ -1,12 +1,3 @@
-window.requestAnimFrame = (function(){
-  return  window.requestAnimationFrame       ||
-		  window.webkitRequestAnimationFrame ||
-		  window.mozRequestAnimationFrame    ||
-		  function( callback ){
-			window.setTimeout(callback, 1000 / 60);
-		  };
-})();
-
 function RGBA(r, g, b, a){
 	this.r = typeof r != 'undefined' ? r : 0;
 	this.g = typeof g != 'undefined' ? g : 0;
@@ -100,7 +91,11 @@ Party.prototype = {
         var visualizerBgColor = new RGBA();
         var gifSource;
 
+        console.log('kick');
+
         if ( this.beatHeldTime <= 0 ) {
+
+            console.log('giffing kick');
 
             this.lastKickTime = Date.now();
 
@@ -129,6 +124,8 @@ Party.prototype = {
                 this.gifSources[ tag ] = new GifSource( tag );
             }
 
+            this.gifSources[ tag ].setActive( true );
+
             this.tags.push( tag );
             this.renderControls();
 
@@ -143,6 +140,11 @@ Party.prototype = {
         if ( idx > -1 ) {
 
             this.tags.splice( idx, 1 );
+
+            if ( this.gifSources[ tag ] ) {
+                this.gifSources[ tag ].setActive( false );
+            }
+
             this.renderControls();
 
             return true;
@@ -190,9 +192,9 @@ Party.prototype = {
         this.audio.volume = 0; // use the volume of the audio stream, otherwise we'll get it double
         this.dancer = new Dancer();
         this.dancer.createKick({
-            frequency: [0, 10],
+            frequency: [0,10],
             decay: 0.02,
-            threshold: 0.3,
+            threshold: 0.2,
             onKick: this.handleAudioKick.bind( this )
         }).on();
 
@@ -201,7 +203,7 @@ Party.prototype = {
 
     update: function () {
 
-        requestAnimFrame( this.update.bind( this ) );
+        requestAnimationFrame( this.update.bind( this ) );
 
         var deltaFrameTime = (Date.now() - this.prevFrameTime) / 1000;
         this.beatHeldTime -= deltaFrameTime;
@@ -213,7 +215,10 @@ Party.prototype = {
         if ( this.dancer.isPlaying() ) {
             // Beat cheating
             if ( Date.now() - this.lastKickTime > 2400 ) {
-               this.handleAudioKick();
+
+                console.log('beat cheat');
+
+                this.handleAudioKick();
             }
 
         }
