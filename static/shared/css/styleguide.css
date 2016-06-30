@@ -23,6 +23,7 @@ a, a:hover, a:active, a:visited {
     background-color: #404040;
     background-image: none;
     border-color: #333;
+    color: #dadada;
 }
 
 .btn.btn-primary:hover {

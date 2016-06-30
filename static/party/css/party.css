@@ -1,0 +1,30 @@
+#site,
+#visualizer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+
+    background-color: #404040;
+}
+
+#visualizer {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+#controls {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    display: none;
+    z-index: 2;
+
+    padding: 10px;
+
+    background-color: #404040;
+    color: #dadada;
+}

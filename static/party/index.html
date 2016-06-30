@@ -6,23 +6,40 @@
         <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap.min.css">
         <link rel="stylesheet" href="/vendor/bootstrap/dist/css/bootstrap-theme.min.css">
         <link rel="stylesheet" href="/shared/css/styleguide.css">
+        <link rel="stylesheet" href="css/party.css">
     </head>
     <body>
 
         <div id="site">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-12">
-                        <h1 class="main-title">Gif party - visualizer</h1>
-
-                        <p>
-
-                        </p>
-
-                    </div>
+            <div id="visualizer">
+                <div id="controls">
+                    <script type="text/x-handlebars-template">
+                        <select class="audio-input">
+                            <option value="">choose your audio source</option>
+                            {{#audioOptions}}
+                                <option value="{{value}}">{{label}}</option>
+                            {{/audioOptions}}
+                        </select>
+                    </script>
                 </div>
             </div>
         </div>
 
+        <script src="/vendor/jquery/dist/jquery.min.js"></script>
+        <script src="/vendor/handlebars/dist/handlebars.min.js"></script>
+        <script src="/vendor/webrtc-adapter/out/adapter.js"></script>
+        <script src="/socket.io/socket.io.js"></script>
+        <script src="config.js"></script>
+
+        <script src="js/AudioStreamDancer.js"></script>
+        <script src="js/AudioStream.js"></script>
+        <script src="js/GifSource.js"></script>
+        <script src="js/Party.js"></script>
+
+        <script>
+
+            var party = new Party( $('#visualizer'), $('#controls') );
+
+        </script>
     </body>
 </html>

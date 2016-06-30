@@ -21,5 +21,11 @@ router.get( '/party/:party/remote/config.js', function ( req, res ) {
     res.send( respond( req.params.party ) );
 });
 
+router.get( '/party/:party/config.js', function ( req, res ) {
+
+    res.type('application/javascript');
+    res.send( respond( req.params.party ) );
+});
+
 
 module.exports = router;
