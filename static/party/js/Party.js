@@ -75,6 +75,7 @@ Party.prototype = {
         this.audio.srcObject = inputStream;
         this.dancer.load( this.audio );
         this.dancer.play();
+        this.dancer.setVolume(0);
     },
 
     handleAudioInputSelect: function ( e ) {
@@ -189,15 +190,13 @@ Party.prototype = {
         this.audioStream = new AudioStream();
 
         this.audio = document.createElement( 'audio' );
-        this.audio.volume = 0; // use the volume of the audio stream, otherwise we'll get it double
         this.dancer = new Dancer();
         this.dancer.createKick({
             frequency: [0,10],
             decay: 0.02,
-            threshold: 0.2,
+            threshold: 0.3,
             onKick: this.handleAudioKick.bind( this )
         }).on();
-
         this.audioStream.registerOnInputChange( this.handleAudioInputChange.bind( this ) );
     },
 
