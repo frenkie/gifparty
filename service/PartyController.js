@@ -3,7 +3,9 @@ var util = require('util');
 var extend = require('extend');
 var debug = require('debug')('gifparty:partycontrol');
 
-var MessageEngine = require('./MessageEngine');
+var Receiver = require('./Receiver');
+var Remote = require('./Remote');
+
 var messages = require('../config.json').messages; // messages that may be freely passed on
 
 /**
@@ -19,9 +21,14 @@ var PartyController = function ( broadcaster, partyPlace ) {
 
     this.broadcaster = broadcaster;
     this.partyPlace = partyPlace;
-    this.messageEngine = new MessageEngine( this.broadcaster, messages );
 
+    /**
+     * After adding minTags, we don't allow removing more than minTags
+     * @type {{tags: Array, minTags: number, maxTags: number}}
+     */
     this.status = {
+        tags: [],
+        minTags : 1,
         maxTags : 4
     };
 
@@ -43,9 +50,11 @@ extend( PartyController.prototype, {
         }
     },
 
-    addRemote : function ( remoteSocket ) {
+    addRemote : function ( remote ) {
 
-        this.broadcaster.to( remoteSocket.id ).emit( 'statusupdate', this.status );
+        this.bindRemoteEvents( remote );
+
+        this.broadcaster.to( remote.getId() ).emit( 'statusupdate', this.status );
     },
 
     bindBroadcasterEvents () {
@@ -61,10 +70,30 @@ extend( PartyController.prototype, {
 
         var receiverSocket = receiver.getSocket();
 
-        // handle the messages that cannot be freely passed on through MessageEngine
         receiverSocket.on('disconnect', this.handleReceiverDisconnect.bind(this) );
-        receiverSocket.on('statusupdate', this.handleReceiverStatus.bind(this) );
-        receiverSocket.on('tagupdate', this.handleReceiverTagUpdate.bind(this) );
+    },
+
+    bindRemoteEvents : function ( remote ) {
+
+        var remoteSocket = remote.getSocket();
+
+        remoteSocket.on('statusrequest', function () {
+
+            this.handleStatusRequest( remoteSocket );
+
+        }.bind(this) );
+
+        remoteSocket.on('tagaddrequest', function ( tag ) {
+
+            this.handleTagAddRequest( tag, remoteSocket );
+
+        }.bind(this) );
+
+        remoteSocket.on('tagremoverequest', function ( tag ) {
+
+            this.handleTagRemoveRequest( tag, remoteSocket );
+
+        }.bind(this) );
     },
 
     handleClientIdentification: function ( client, identity ) {
@@ -82,7 +111,7 @@ extend( PartyController.prototype, {
 
                 case 'remote':
                     debug( 'remote identified' );
-                    this.addRemote( client );
+                    this.addRemote( new Remote( client ) );
                     break;
             }
         } else {
@@ -96,34 +125,40 @@ extend( PartyController.prototype, {
         // ...
     },
 
-    handleReceiverStatus : function ( status ) {
-
-        if ( status.tags ) {
-            this.status.tags = status.tags;
-        } else {
-            this.status.tags = [];
-        }
-
-        debug('broadcasting status update');
-        this.broadcaster.emit( 'statusupdate', this.status );
+    handleStatusRequest: function ( requestSocket ) {
+        requestSocket.emit( 'statusupdate', this.status );
     },
 
-    handleReceiverTagUpdate : function ( tags ) {
+    handleTagAddRequest : function ( tag, requestSocket ) {
 
-        tags = tags || [];
+        if ( this.status.tags.indexOf( tag ) == -1 &&
+            this.status.tags.length < this.status.maxTags ) {
 
-        var currentTags = this.status.tags || [];
-        var tagsAreEqual = ( tags.length == currentTags.length &&
-                        tags.every(function ( tag, i ) { return ( currentTags.indexOf( tag ) > -1 ) }) );
+            debug( 'broadcasting tag update, tag added', tag );
 
-        if ( ! tagsAreEqual ) {
-            debug( 'broadcasting tag update' );
+            this.status.tags.push( tag );
+            this.broadcaster.emit( 'tagupdate', this.status.tags );
 
-            this.status.tags = tags;
-
-            this.broadcaster.emit( 'tagupdate', tags );
         } else {
-            debug( 'tags are unchanged' );
+            debug( 'tags are unchanged, nothing added' );
+            requestSocket.emit( 'tagupdate', this.status.tags );
+        }
+    },
+
+    handleTagRemoveRequest : function ( tag, requestSocket ) {
+
+        var indexOfTag = this.status.tags.indexOf( tag );
+
+        if ( indexOfTag > -1 && this.status.tags.length > this.status.minTags ) {
+
+            debug( 'broadcasting tag update, tag removed', tag );
+
+            this.status.tags.splice( indexOfTag, 1 );
+            this.broadcaster.emit( 'tagupdate', this.status.tags );
+
+        } else {
+            debug( 'tags are unchanged, nothing removed' );
+            requestSocket.emit( 'tagupdate', this.status.tags );
         }
     }
 });

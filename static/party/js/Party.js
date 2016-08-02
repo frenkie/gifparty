@@ -16,7 +16,7 @@ var Party = function ( $visualizer, $controls ) {
     this.$controls = $controls;
 
     this.MAX_TAGS = 4;
-    this.BEAT_HOLD_TIME = 0.075;
+    this.BEAT_HOLD_TIME = 0.1;
 
     this.beatHeldTime = 0.0;
     this.lastKickTime = 0.0;
