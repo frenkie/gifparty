@@ -93,10 +93,16 @@ var Remote = {
 
         Remote.setLoadingState( true );
 
-        Remote.socket.emit( 'tagaddrequest', tag );
+        if ( /^[a-z0-9]+$/i.test( tag ) ) {
+
+            Remote.socket.emit( 'tagaddrequest', tag );
+
+        } else {
+            alert( 'You can only use letters and numbers for tag input!' );
+            Remote.setLoadingState( false );
+        }
 
         Remote.tagInput.val( '' );
-
     },
 
     handleTagRemoveRequest: function ( e ) {
