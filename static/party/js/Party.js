@@ -10,10 +10,14 @@ function RGBA(r, g, b, a){
 }
 
 
-var Party = function ( $visualizer, $controls ) {
+var Party = function ( $visualizer, $controls, host, party ) {
 
     this.$visualizer = $visualizer;
     this.$controls = $controls;
+    this.host = host;
+    this.party = party;
+
+    this.socket = io( this.host +'/'+ this.party );
 
     this.MAX_TAGS = 4;
     this.BEAT_HOLD_TIME = 0.1;
@@ -30,14 +34,17 @@ var Party = function ( $visualizer, $controls ) {
         this.setupAudioHandler();
         this.bindVisualizerHandlers();
         this.bindControlsHandlers();
-
-        // for testing purposes
-        this.handleTagAddRequest( 'cats' );
-        this.handleTagAddRequest( 'rainbows' );
+        this.bindSocketHandlers();
 
         this.renderControls();
 
+        // temp, select default audio input, which makes reloading the page easy
+        this.selectedAudioDeviceId = 'default';
+        this.audioStream.chooseInput( 'default' );
+
         this.update();
+
+        this.identify();
     }
 };
 
@@ -45,6 +52,14 @@ Party.prototype = {
 
     bindControlsHandlers : function () {
         this.$controls.on('change', '.audio-input', this.handleAudioInputSelect.bind( this ) );
+    },
+
+    bindSocketHandlers : function () {
+
+        this.socket.on( 'statusupdate', this.handleStatusUpdate.bind( this ) );
+        this.socket.on( 'tagaddupdate', this.handleTagAddRequest.bind( this ) );
+        this.socket.on( 'tagremoveupdate', this.handleTagRemoveRequest.bind( this ) );
+        this.socket.on( 'disconnect', this.handleDisconnect.bind( this ) );
     },
 
     bindVisualizerHandlers: function () {
@@ -118,6 +133,26 @@ Party.prototype = {
         }
     },
 
+    handleDisconnect: function () {
+
+        var reconnectMessage = 'Disconnected from party ' + this.party + ', do you want to reconnect?';
+
+        if ( confirm( reconnectMessage ) ) {
+            document.location.reload();
+        }
+    },
+
+    handleStatusUpdate: function ( data ) {
+
+        if ( data && data.tags ) {
+            data.tags.forEach( function ( tag ) {
+
+                this.handleTagAddRequest( tag );
+
+            }.bind( this ) );
+        }
+    },
+
     handleTagAddRequest : function ( tag ) {
         if ( this.tags.length < this.MAX_TAGS ) {
 
@@ -154,6 +189,13 @@ Party.prototype = {
         return false;
     },
 
+    identify: function () {
+
+        this.socket.emit( 'identify', {
+            type: 'receiver', partyPlace: this.party
+        } );
+    },
+
     renderControls: function () {
 
         if ( ! this.controlsTemplate ) {
@@ -162,6 +204,7 @@ Party.prototype = {
 
         var viewModel = {
             audioOptions: [],
+            party: this.party,
             tags: this.tags
         };
 

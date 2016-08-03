@@ -70,6 +70,24 @@ extend( PartyController.prototype, {
 
         var receiverSocket = receiver.getSocket();
 
+        receiverSocket.on('statusrequest', function () {
+
+            this.handleStatusRequest( receiverSocket );
+
+        }.bind(this) );
+
+        receiverSocket.on('tagaddrequest', function ( tag ) {
+
+            this.handleTagAddRequest( tag, receiverSocket );
+
+        }.bind(this) );
+
+        receiverSocket.on('tagremoverequest', function ( tag ) {
+
+            this.handleTagRemoveRequest( tag, receiverSocket );
+
+        }.bind(this) );        
+        
         receiverSocket.on('disconnect', this.handleReceiverDisconnect.bind(this) );
     },
 
@@ -94,6 +112,8 @@ extend( PartyController.prototype, {
             this.handleTagRemoveRequest( tag, remoteSocket );
 
         }.bind(this) );
+        
+        remoteSocket.on('disconnect', this.handleRemoteDisconnect.bind(this) );        
     },
 
     handleClientIdentification: function ( client, identity ) {
@@ -124,6 +144,10 @@ extend( PartyController.prototype, {
     handleReceiverDisconnect : function () {
         // ...
     },
+    
+    handleRemoteDisconnect : function () {
+        // ...
+    },    
 
     handleStatusRequest: function ( requestSocket ) {
         requestSocket.emit( 'statusupdate', this.status );
@@ -138,6 +162,7 @@ extend( PartyController.prototype, {
 
             this.status.tags.push( tag );
             this.broadcaster.emit( 'tagupdate', this.status.tags );
+            this.broadcaster.emit( 'tagaddupdate', tag );
 
         } else {
             debug( 'tags are unchanged, nothing added' );
@@ -155,6 +180,7 @@ extend( PartyController.prototype, {
 
             this.status.tags.splice( indexOfTag, 1 );
             this.broadcaster.emit( 'tagupdate', this.status.tags );
+            this.broadcaster.emit( 'tagremoveupdate', tag );
 
         } else {
             debug( 'tags are unchanged, nothing removed' );

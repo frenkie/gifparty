@@ -15,11 +15,12 @@
                 <div id="controls">
                     <script type="text/x-handlebars-template">
                         <select class="audio-input">
-                            <option value="">choose your audio source</option>
                             {{#audioOptions}}
                                 <option value="{{value}}" {{#selected}} selected="selected" {{/selected}}>{{label}}</option>
                             {{/audioOptions}}
                         </select>
+
+                        {{#party}}<small class="party-place">controlling <a href="/remote/party/{{party}}">{{.}}</a></small>{{/party}}
 
                         <div class="tags">
                             {{#tags}}<button class="tag btn btn-primary">{{.}}</button>{{/tags}}
@@ -42,7 +43,21 @@
 
         <script>
 
-            var party = new Party( $('#visualizer'), $('#controls') );
+            var party;
+
+            $(function () {
+
+                var dl = document.location;
+
+                var socketServer = dl.origin;
+                if ( window.io && window.gifPartyConfig && window.gifPartyConfig.party ) {
+
+                    party = new Party( $('#visualizer'), $('#controls'), socketServer, window.gifPartyConfig.party );
+
+                } else {
+                    $('#site' ).html('unable to connect to GifParty Receiver');
+                }
+            });
 
         </script>
     </body>
