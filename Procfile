@@ -1,0 +1,1 @@
+web: DEBUG=gifparty* node server.js
