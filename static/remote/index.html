@@ -43,7 +43,21 @@
         <script src="/vendor/handlebars/dist/handlebars.min.js"></script>
         <script src="/socket.io/socket.io.js"></script>
         <script src="config.js"></script>
-        <script src="js/remote.js"></script>
+        <script src="js/Remote.js"></script>
+        <script>
 
+            $(function () {
+
+                var dl = document.location;
+
+                var socketServer = dl.origin;
+                if ( window.io && window.gifPartyConfig && window.gifPartyConfig.party ) {
+                    Remote.init( socketServer, window.gifPartyConfig.party );
+                } else {
+                    $('.loader' ).html('unable to connect to GifParty Remote');
+                }
+            });
+
+        </script>
     </body>
 </html>
