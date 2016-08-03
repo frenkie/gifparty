@@ -107,11 +107,7 @@ Party.prototype = {
         var visualizerBgColor = new RGBA();
         var gifSource;
 
-        console.log('kick');
-
         if ( this.beatHeldTime <= 0 ) {
-
-            console.log('giffing kick');
 
             this.lastKickTime = Date.now();
 
