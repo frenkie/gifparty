@@ -20,7 +20,7 @@ var Party = function ( $visualizer, $controls, host, party ) {
     this.socket = io( this.host +'/'+ this.party );
 
     this.MAX_TAGS = 4;
-    this.BEAT_HOLD_TIME = 0.1;
+    this.BEAT_HOLD_TIME = 0.125;
 
     this.beatHeldTime = 0.0;
     this.lastKickTime = 0.0;
@@ -81,6 +81,7 @@ Party.prototype = {
         var tag = this.tags[ Math.round( Math.random() * (this.tags.length-1) ) ];
 
         if ( this.gifSources[ tag ] ) {
+
             return this.gifSources[ tag ];
         }
     },
@@ -116,6 +117,7 @@ Party.prototype = {
             gifSource = this.getRandomGifSource();
 
             if ( gifSource ) {
+                console.log('showing '+ gifSource.tag );
                 gifSource.displayRandomGif( this.$visualizer );
             }
 

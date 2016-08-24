@@ -1,7 +1,17 @@
-var GifSource = function ( tag ) {
+var GifSource = function ( tag, quality ) {
 
-    this.active = true;
+    this.active = false;
+
+    this.MIN_GIF_PRELOAD = 4;
+   	this.MAX_GIF_PRELOAD_BATCH_COUNT = 4;
+   	this.MAX_GIF_COUNT = 15;
+    this.FETCH_REFRESH_TIMEOUT = 30000;
+    this.QUALITY_LOW = 'low';
+    this.QUALITY_HIGH = 'high';
+
     this.tag = tag;
+    this.quality = quality || this.QUALITY_LOW;
+
     this.data = null;
     this.ready = false;
    	this.gifs = [];
@@ -9,13 +19,7 @@ var GifSource = function ( tag ) {
     this.searchOffset = 0;
    	this.searchTotal = 0;
 
-    this.MIN_GIF_PRELOAD = 5;
-   	this.MAX_GIF_COUNT = 100;
-
-    this.fetch().then( this.preloadGifs.bind( this ) );
-
-    this.FETCH_REFRESH_TIMEOUT = 30000;
-    this.lastFetch = Date.now();
+    this.preloadCount = 0; // including gifs with errors
 
     //this.update();
 };
@@ -40,6 +44,8 @@ GifSource.prototype = {
     fetch: function () {
 
         var deferred = new $.Deferred();
+
+        this.lastFetch = Date.now();
 
         console.log( '(re)fetching GIFs for '+ this.tag );
 
@@ -69,8 +75,30 @@ GifSource.prototype = {
     },
 
     preloadGifs: function () {
-        for ( var index in this.data ) {
-            this.preloadGif( this.data[ index ].images.original.url );
+
+        var preloadBatchCount = 0;
+
+        console.log( 'preloading GIFs for '+ this.tag +', current amount: '+ this.gifs.length );
+
+        this.preloadCount = 0;
+
+        if ( this.active && this.gifs.length < this.MAX_GIF_COUNT ) {
+            for ( var index in this.data ) {
+
+                preloadBatchCount++;
+
+                this.preloadGif(
+                        this.data[ index ]
+                            .images[ this.quality === this.QUALITY_HIGH ? 'original' : 'fixed_height' ]
+                            .url
+                );
+
+                delete this.data[ index ];
+
+                if ( preloadBatchCount >= this.MAX_GIF_PRELOAD_BATCH_COUNT ) {
+                    break;
+                }
+            }
         }
     },
 
@@ -88,17 +116,52 @@ GifSource.prototype = {
 
             this.ready = this.gifs.length >= this.MIN_GIF_PRELOAD;
 
+            this.preloadCount++;
+
+            if ( this.preloadCount === this.MAX_GIF_PRELOAD_BATCH_COUNT ) {
+                this.preloadGifs();
+            }
+
         }.bind( this ) );
 
        	img.addEventListener( 'error', function () {
 
-       	});
+            this.preloadCount++;
+
+            if ( this.preloadCount === this.MAX_GIF_PRELOAD_BATCH_COUNT ) {
+                this.preloadGifs();
+            }
+
+       	}.bind( this ) );
 
        	img.src = url;
     },
 
     setActive: function ( to ) {
         this.active = to;
+
+        if ( this.active ) {
+
+            this.fetch().then( this.preloadGifs.bind( this ) );
+
+        } else {
+            // clear images from memory
+            console.log( 'clearing images from memory for tag '+ this.tag );
+
+            this.data = null;
+            this.ready = false;
+
+            this.searchOffset = 0;
+           	this.searchTotal = 0;
+
+            this.preloadCount = 0;
+
+            this.gifs.forEach( function ( image ) {
+                image = null;
+            });
+
+            this.gifs = [];
+        }
     },
 
     update: function () {
