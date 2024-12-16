@@ -7,6 +7,7 @@
   },
   "dependencies": {
     "bootstrap": "~3.3.6",
+    "cross-env": "^7.0.3",
     "debug": "~2.2.0",
     "express": "~4.13.4",
     "extend": "~3.0.0",
@@ -19,6 +20,7 @@
     "webrtc-adapter": "^1.4.0"
   },
   "scripts": {
-    "debug": "DEBUG=gifparty* nodemon server.js"
+    "debug": "cross-env DEBUG=gifparty* nodemon server.js",
+    "debug-norefresh": "cross-env DEBUG=gifparty* node server.js"
   }
 }

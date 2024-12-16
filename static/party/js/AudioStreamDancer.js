@@ -336,6 +336,7 @@
       var magnitude = this.maxAmplitude( this.frequency );
       if ( magnitude >= this.currentThreshold &&
           magnitude >= this.threshold ) {
+        console.log(`magnitude ${magnitude}`);
         this.currentThreshold = magnitude;
         this.onKick && this.onKick.call( this.dancer, magnitude );
       } else {

@@ -11,7 +11,7 @@ router.get('/gifs/:query', function (req, res) {
     if ( req.params.query ) {
 
         requestUrl = 'https://api.giphy.com/v1/gifs/search?api_key='+ config.settings.giphyApiKey
-                        +'&limit='+ ( req.query.limit || 100 ) +'&offset='+ ( req.query.offset || 0 ) +'&q='+
+                        +'&limit='+ ( req.query.limit || 100 ) +'&rating=g&lang=en&bundle=messaging_non_clips&offset='+ ( req.query.offset || 0 ) +'&q='+
                             req.params.query.replace( /[-]+/ig, '+');
 
         debug( requestUrl );
