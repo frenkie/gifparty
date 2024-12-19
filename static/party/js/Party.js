@@ -18,7 +18,7 @@ var Party = function ( $visualizer, $controls, host, party ) {
     this.party = party;
     
     this.audioFeedback = true;
-    this.threshold = .3;
+    this.threshold = .18;
 
     this.socket = io( this.host +'/'+ this.party );
 
@@ -101,7 +101,6 @@ Party.prototype = {
     },
     
     handleAudioInputChange: function ( inputStream ) {
-
         this.audio.srcObject = inputStream;
         this.dancer.load( this.audio );
         this.dancer.play();

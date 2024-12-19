@@ -64,7 +64,11 @@
                 var socketServer = dl.origin;
                 if ( window.io && window.gifPartyConfig && window.gifPartyConfig.party ) {
 
-                    party = new Party( $('#visualizer'), $('#controls'), socketServer, window.gifPartyConfig.party );
+                    $('#visualizer').prepend('<button id="start" class="btn btn-primary">Start</button>');
+                    $('#start').one('click', ()=>{
+                        $('#start').remove();
+                        party = new Party( $('#visualizer'), $('#controls'), socketServer, window.gifPartyConfig.party );
+                    });
 
                 } else {
                     $('#site' ).html('unable to connect to GifParty Receiver');

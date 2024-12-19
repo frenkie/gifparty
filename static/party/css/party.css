@@ -10,9 +10,16 @@
 }
 
 #visualizer {
+    display: flex;
     background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
+}
+
+#start {
+    flex:1;
+    font-style: italic;
+    font-size: 10rem;
 }
 
 #controls {
