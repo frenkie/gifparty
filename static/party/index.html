@@ -19,6 +19,16 @@
                                 <option value="{{value}}" {{#selected}} selected="selected" {{/selected}}>{{label}}</option>
                             {{/audioOptions}}
                         </select>
+                        
+                        <fieldset class="threshold-container">
+                            <small class="threshold-label">Kick threshold ({{threshold}}):</small>
+                            <input type="range" class="threshold" min="0" max="1" step="0.01" value="{{threshold}}" />
+                        </fieldset>
+
+                        <fieldset class="audio-feedback-container">
+                            <small class="audio-feedback-label">Listen to input audio</small>
+                            <input type="checkbox" class="audio-feedback" {{#audioFeedback}}checked="checked"{{/audioFeedback}} />
+                        </fieldset>                        
 
                         {{#party}}<small class="party-place">controlling <a href="/remote/party/{{party}}">{{.}}</a></small>{{/party}}
 

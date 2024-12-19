@@ -16,6 +16,9 @@ var Party = function ( $visualizer, $controls, host, party ) {
     this.$controls = $controls;
     this.host = host;
     this.party = party;
+    
+    this.audioFeedback = true;
+    this.threshold = .3;
 
     this.socket = io( this.host +'/'+ this.party );
 
@@ -52,6 +55,8 @@ Party.prototype = {
 
     bindControlsHandlers : function () {
         this.$controls.on('change', '.audio-input', this.handleAudioInputSelect.bind( this ) );
+        this.$controls.on('change', '.audio-feedback', this.handleAudioFeedbackChange.bind( this ) );
+        this.$controls.on('change', '.threshold', this.handleThresholdChange.bind( this ) );
     },
 
     bindSocketHandlers : function () {
@@ -86,6 +91,15 @@ Party.prototype = {
         }
     },
 
+    handleAudioFeedbackChange: function ( e ) {
+
+        const check = e.currentTarget;
+        this.audioFeedback = check.checked;
+        console.log(`Setting audio feedback to ${this.audioFeedback}`);
+        this.dancer.setVolume( this.audioFeedback ? 1 : 0 );
+        this.audio.volume = this.audioFeedback ? 1 : 0;
+    },
+    
     handleAudioInputChange: function ( inputStream ) {
 
         this.audio.srcObject = inputStream;
@@ -102,7 +116,7 @@ Party.prototype = {
             this.audioStream.chooseInput( this.selectedAudioDeviceId );
         }
     },
-
+    
     handleAudioKick: function () {
 
         var visualizerBgColor = new RGBA();
@@ -187,6 +201,17 @@ Party.prototype = {
         return false;
     },
 
+    handleThresholdChange: function ( e ) {
+        var $input = $( e.currentTarget );
+
+        if ( $input.val() ) {
+            this.threshold = parseFloat($input.val());
+            console.log(`Setting threshold to ${this.threshold}`);
+            this.$controls.find(".threshold-label").text( this.$controls.find(".threshold-label").text().replace(/\([^)]+\)/, `(${this.threshold})`) );
+            this.kick.threshold = this.threshold;
+        }
+    },    
+    
     identify: function () {
 
         this.socket.emit( 'identify', {
@@ -201,9 +226,11 @@ Party.prototype = {
         }
 
         var viewModel = {
+            audioFeedback: this.audioFeedback,
             audioOptions: [],
             party: this.party,
-            tags: this.tags
+            tags: this.tags,
+            threshold: this.threshold
         };
 
         var selectedAudioInput = this.selectedAudioDeviceId;
@@ -232,12 +259,13 @@ Party.prototype = {
 
         this.audio = document.createElement( 'audio' );
         this.dancer = new Dancer();
-        this.dancer.createKick({
+        this.kick = this.dancer.createKick({
             frequency: [0,10],
             decay: 0.02,
-            threshold: 0.3,
+            threshold: this.threshold,
             onKick: this.handleAudioKick.bind( this )
-        }).on();
+        });
+        this.kick.on();
         this.audioStream.registerOnInputChange( this.handleAudioInputChange.bind( this ) );
     },
 

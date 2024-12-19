@@ -41,3 +41,13 @@
 .tag {
     margin-right: 5px;
 }
+
+.threshold-container,
+.audio-feedback-container {
+    display: inline;
+    padding: 0 4px;
+}
+
+.threshold-label {
+    text-wrap: nowrap;
+}
