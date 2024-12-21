@@ -4,6 +4,20 @@ var request = require('request');
 var router = express.Router();
 var config = require('../config.json');
 
+// test for now a getter
+router.get('/gifs/apikey/:key', (req,res)=>{
+    if ( req.params.key ) {
+        config.settings.giphyApiKey = req.params.key;
+        res.send(`updated to ${req.params.key}`);    
+    } else {
+        res.send('not updated');    
+    }
+});
+
+router.get('/gifs/apikey', (req,res)=>{
+    res.send(config.settings.giphyApiKey);
+});
+
 router.get('/gifs/:query', function (req, res) {
 
     var requestUrl;
